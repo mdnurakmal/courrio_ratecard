@@ -136,16 +136,14 @@ router.post('/price', async (request, response) => {
 
                     console.log(err);
                     response.statusCode = 200;
-                    response.send(err.toString());
+                    var distance = calculateDistance(request.body["pickup_address"],request.body["delivery_address"]);
+                    response.send(distance);
                     return;
                 });
                
             }
 
-            var destinations = [];
-            destinations.push(request.body["pickup_address"]);
-            destinations.push(request.body["delivery_address"]);
-            calculateDistance(request.body["pickup_address"],request.body["delivery_address"]);
+     
         
             // console.log("Requesting for order: " + request.body["customer_number"]);
             // console.log("Requesting for order: " + request.body["delivery_code"]);
