@@ -12,7 +12,7 @@ function importCsv() {
       try {
           //console.log(data["Rate Code"]);
           var detail = []
-
+          detail.push({"Rate Code":data["Rate Code"]});
           detail.push({"Customer":data["Customer"]});
           detail.push({"Region":data["Region"]});
           detail.push({"Delivery Type":data["Delivery Type"]});
@@ -39,7 +39,7 @@ function importCsv() {
           detail.push({"Sunday Surcharge":data["Sunday Surcharge"]});
           detail.push({"PH Surcharge":data["PH Surcharge"]});
 
-          initDB(data["Rate Code"],detail)
+          initDB(detail)
           //console.log(detail);
           //perform the operation
       }
@@ -58,17 +58,12 @@ function importCsv() {
 // Create a new client
 const firestore = new Firestore();
 
-async function initDB(ratecode, detail) {
+async function initDB( detail) {
 
   const res = await firestore.collection('pricing').add({
-      "rate code": ratecode,
+    "detail": detail,
   });
 
-  const detailRef = firestore.collection('pricing');
-
-  await detailRef.doc(res.id).collection('details').add({
-    "detail": detail,
-});
 }
 
 //   // Obtain a document reference.
