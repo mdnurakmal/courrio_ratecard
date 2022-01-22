@@ -103,7 +103,7 @@ function calculateDistance(ori,des) {
                 }
             }
             console.log("Total distance = " + JSON.stringify(distances));
-            console.log("Total distance = " + totalDistance);
+            console.log("Total distance = " + distances["origin_addresses"]["text"]);
             return totalDistance;
         });
 
