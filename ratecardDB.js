@@ -65,9 +65,9 @@ async function createCustomer(ratecode, detail) {
 
   const detailRef = firestore.collection('pricing');
 
-  await detailRef.doc(res.id).collection('details').doc("webhook").set({
-      "detail": detail
-  });
+  await detailRef.doc(res.id).collection('details').add({
+    "detail": detail,
+});
 }
 
 //   // Obtain a document reference.
