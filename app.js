@@ -136,8 +136,7 @@ router.post('/price', async (request, response) => {
                 .catch(function(err) {
 
                     console.log(err);
-                    response.statusCode = 200;
-                    var distance = calculateDistance(request.body["pickup_address"],request.body["delivery_address"]);
+                    response.statusCode = 400;
                     response.send(err);
                     return;
                 });
