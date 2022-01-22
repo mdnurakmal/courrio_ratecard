@@ -130,14 +130,15 @@ router.post('/price', async (request, response) => {
                 .then(res => {
                     console.log(res);
                     response.statusCode = 200;
-                    response.send(res);
+                    var distance = calculateDistance(request.body["pickup_address"],request.body["delivery_address"]);
+                    response.send(distance);
                 })
                 .catch(function(err) {
 
                     console.log(err);
                     response.statusCode = 200;
                     var distance = calculateDistance(request.body["pickup_address"],request.body["delivery_address"]);
-                    response.send(distance);
+                    response.send(err);
                     return;
                 });
                
