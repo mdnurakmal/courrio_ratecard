@@ -4,9 +4,10 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
+    "@google-cloud/firestore": "^5.0.2",
     "axios": "^0.25.0",
-    "csv-parser": "^3.0.0",
     "csv-parse": "^5.0.4",
+    "csv-parser": "^3.0.0",
     "expess": "^0.0.1-security",
     "express": "^4.17.2",
     "fs": "^0.0.1-security",
