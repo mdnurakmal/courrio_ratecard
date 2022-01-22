@@ -11,33 +11,33 @@ function importCsv() {
   .on('data', function(data){
       try {
           //console.log(data["Rate Code"]);
-          var detail = []
-          detail.push({"Rate Code":data["Rate Code"]});
-          detail.push({"Customer":data["Customer"]});
-          detail.push({"Region":data["Region"]});
-          detail.push({"Delivery Type":data["Delivery Type"]});
-          detail.push({"Fixed Delivery Deadline":data["Fixed Delivery Deadline"]});
-          detail.push({"Order window start":data["Order window start"]});
-          detail.push({"Order Cutoff":data["Order Cutoff"]});
-          detail.push({"Days from Order to Delivery":data["Days from Order to Delivery"]});
-          detail.push({"Saturday Deliveries":data["Saturday Deliveries"]});
-          detail.push({"Sunday Deliveries":data["Sunday Deliveries"]});
-          detail.push({"Public Holiday Deliveries":data["Public Holiday Deliveries"]});
-          detail.push({"Base Rate (ex GST)":data["Base Rate (ex GST)"]});
-          detail.push({"Incl KM":data["Incl KM"]});
-          detail.push({"Incl Volume":data["Incl Volume"]});
-          detail.push({"Incl Kg":data["Incl Kg"]});
-          detail.push({"Additional KM Rate":data["Additional KM Rate"]});
-          detail.push({"Additional Volume Rate":data["Additional Volume Rate"]});
-          detail.push({"Additional KG Rate":data["Additional KG Rate"]});
-          detail.push({"Pickup Deadline":data["Pickup Deadline"]});
-          detail.push({"Delivery Deadline Home":data["Delivery Deadline Home"]});
-          detail.push({"Delivery Deadline Business":data["Delivery Deadline Business"]});
-          detail.push({"Same Day Mins Pickup Deadline":data["Same Day Mins Pickup Deadline"]});
-          detail.push({"Same Day Mins Delivery Deadline":data["Same Day Mins Delivery Deadline"]});
-          detail.push({"Saturday Surcharge":data["Saturday Surcharge"]});
-          detail.push({"Sunday Surcharge":data["Sunday Surcharge"]});
-          detail.push({"PH Surcharge":data["PH Surcharge"]});
+          var detail = {}
+          detail.add({"Rate Code":data["Rate Code"]});
+          detail.add({"Customer":data["Customer"]});
+          detail.add({"Region":data["Region"]});
+          detail.add({"Delivery Type":data["Delivery Type"]});
+          detail.add({"Fixed Delivery Deadline":data["Fixed Delivery Deadline"]});
+          detail.add({"Order window start":data["Order window start"]});
+          detail.add({"Order Cutoff":data["Order Cutoff"]});
+          detail.add({"Days from Order to Delivery":data["Days from Order to Delivery"]});
+          detail.add({"Saturday Deliveries":data["Saturday Deliveries"]});
+          detail.add({"Sunday Deliveries":data["Sunday Deliveries"]});
+          detail.add({"Public Holiday Deliveries":data["Public Holiday Deliveries"]});
+          detail.add({"Base Rate (ex GST)":data["Base Rate (ex GST)"]});
+          detail.add({"Incl KM":data["Incl KM"]});
+          detail.add({"Incl Volume":data["Incl Volume"]});
+          detail.add({"Incl Kg":data["Incl Kg"]});
+          detail.add({"Additional KM Rate":data["Additional KM Rate"]});
+          detail.add({"Additional Volume Rate":data["Additional Volume Rate"]});
+          detail.add({"Additional KG Rate":data["Additional KG Rate"]});
+          detail.add({"Pickup Deadline":data["Pickup Deadline"]});
+          detail.add({"Delivery Deadline Home":data["Delivery Deadline Home"]});
+          detail.add({"Delivery Deadline Business":data["Delivery Deadline Business"]});
+          detail.add({"Same Day Mins Pickup Deadline":data["Same Day Mins Pickup Deadline"]});
+          detail.add({"Same Day Mins Delivery Deadline":data["Same Day Mins Delivery Deadline"]});
+          detail.add({"Saturday Surcharge":data["Saturday Surcharge"]});
+          detail.add({"Sunday Surcharge":data["Sunday Surcharge"]});
+          detail.add({"PH Surcharge":data["PH Surcharge"]});
 
           initDB(detail)
           //console.log(detail);
@@ -60,9 +60,7 @@ const firestore = new Firestore();
 
 async function initDB( detail) {
 
-  const res = await firestore.collection('pricing').add({
-    "detail": JSON.stringify(detail),
-  });
+  const res = await firestore.collection('pricing').add(detail);
 
 }
 
