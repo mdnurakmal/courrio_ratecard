@@ -10,35 +10,36 @@ function importCsv() {
   .pipe(csv())
   .on('data', function(data){
       try {
-          //console.log(data["Rate Code"]);
-          var detail = {}
-          detail.add({"Rate Code":data["Rate Code"]});
-          detail.add({"Customer":data["Customer"]});
-          detail.add({"Region":data["Region"]});
-          detail.add({"Delivery Type":data["Delivery Type"]});
-          detail.add({"Fixed Delivery Deadline":data["Fixed Delivery Deadline"]});
-          detail.add({"Order window start":data["Order window start"]});
-          detail.add({"Order Cutoff":data["Order Cutoff"]});
-          detail.add({"Days from Order to Delivery":data["Days from Order to Delivery"]});
-          detail.add({"Saturday Deliveries":data["Saturday Deliveries"]});
-          detail.add({"Sunday Deliveries":data["Sunday Deliveries"]});
-          detail.add({"Public Holiday Deliveries":data["Public Holiday Deliveries"]});
-          detail.add({"Base Rate (ex GST)":data["Base Rate (ex GST)"]});
-          detail.add({"Incl KM":data["Incl KM"]});
-          detail.add({"Incl Volume":data["Incl Volume"]});
-          detail.add({"Incl Kg":data["Incl Kg"]});
-          detail.add({"Additional KM Rate":data["Additional KM Rate"]});
-          detail.add({"Additional Volume Rate":data["Additional Volume Rate"]});
-          detail.add({"Additional KG Rate":data["Additional KG Rate"]});
-          detail.add({"Pickup Deadline":data["Pickup Deadline"]});
-          detail.add({"Delivery Deadline Home":data["Delivery Deadline Home"]});
-          detail.add({"Delivery Deadline Business":data["Delivery Deadline Business"]});
-          detail.add({"Same Day Mins Pickup Deadline":data["Same Day Mins Pickup Deadline"]});
-          detail.add({"Same Day Mins Delivery Deadline":data["Same Day Mins Delivery Deadline"]});
-          detail.add({"Saturday Surcharge":data["Saturday Surcharge"]});
-          detail.add({"Sunday Surcharge":data["Sunday Surcharge"]});
-          detail.add({"PH Surcharge":data["PH Surcharge"]});
 
+          var detail ={};
+          detail["Rate Code"]=data["Rate Code"];
+          detail["Customer"]=data["Customer"];
+          detail["Region"]=data["Region"];
+          detail["Delivery Type"]=data["Delivery Type"];
+          detail["Fixed Delivery Deadline"]=data["Fixed Delivery Deadline"];
+          detail["Order window start"]=data["Order window start"];
+          detail["Order Cutoff"]=data["Order Cutoff"];
+          detail["Days from Order to Delivery"]=data["Days from Order to Delivery"];
+          detail["Saturday Deliveries"]=data["Saturday Deliveries"];
+          detail["Sunday Deliveries"]=data["Sunday Deliveries"];
+          detail["Public Holiday Deliveries"]=data["Public Holiday Deliveries"];
+          detail["Base Rate (ex GST)"]=data["Base Rate (ex GST)"];
+          detail["Incl KM"]=data["Incl KM"];
+          detail["Incl Volume"]=data["Incl Volume"];
+          detail["Incl Kg"]=data["Incl Kg"];
+          detail["Additional KM Rate"]=data["Additional KM Rate"];
+          detail["Additional Volume Rate"]=data["Additional Volume Rate"];
+          detail["Additional KG Rate"]=data["Additional KG Rate"];
+          detail["Pickup Deadline"]=data["Pickup Deadline"];
+          detail["Delivery Deadline Home"]=data["Delivery Deadline Home"];
+          detail["Delivery Deadline Business"]=data["Delivery Deadline Business"];
+          detail["Same Day Mins Pickup Deadline"]=data["Same Day Mins Pickup Deadline"];
+          detail["Same Day Mins Delivery Deadline"]=data["Same Day Mins Delivery Deadline"];
+          detail["Saturday Surcharge"]=data["Saturday Surcharge"];
+          detail["Sunday Surcharge"]=data["Sunday Surcharge"];
+          detail["PH Surcharge"]=data["PH Surcharge"];
+
+          console.log(detail);
           initDB(detail)
           //console.log(detail);
           //perform the operation
@@ -48,7 +49,7 @@ function importCsv() {
       }
   })
   .on('end',function(){
-    console.log("Rate card DB initialized")
+    console.log("Rate card DB11 initialized")
       //some final operation
   });  
 
