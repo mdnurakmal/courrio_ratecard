@@ -1,0 +1,31 @@
+{
+  "name": "courrio_ratecard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "axios": "^0.25.0",
+    "csv-parser": "^3.0.0",
+    "csv-parse": "^5.0.4",
+    "expess": "^0.0.1-security",
+    "express": "^4.17.2",
+    "fs": "^0.0.1-security",
+    "google-distance-matrix": "^1.1.1",
+    "promise": "^8.1.0",
+    "util": "^0.12.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mdnurakmal/courrio_ratecard.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mdnurakmal/courrio_ratecard/issues"
+  },
+  "homepage": "https://github.com/mdnurakmal/courrio_ratecard#readme"
+}
