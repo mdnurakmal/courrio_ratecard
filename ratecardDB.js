@@ -10,7 +10,7 @@ function importCsv() {
   .pipe(csv())
   .on('data', function(data){
       try {
-          console.log(data["Rate Code"]);
+          //console.log(data["Rate Code"]);
           var detail = []
 
           detail.push({"Customer":data["Customer"]});
@@ -39,8 +39,8 @@ function importCsv() {
           detail.push({"Sunday Surcharge":data["Sunday Surcharge"]});
           detail.push({"PH Surcharge":data["PH Surcharge"]});
 
-          createCustomer(data["Rate Code"],detail)
-          console.log(detail);
+          initDB(data["Rate Code"],detail)
+          //console.log(detail);
           //perform the operation
       }
       catch(err) {
@@ -48,6 +48,7 @@ function importCsv() {
       }
   })
   .on('end',function(){
+    console.log("Rate card DB initialized")
       //some final operation
   });  
 
@@ -57,7 +58,7 @@ function importCsv() {
 // Create a new client
 const firestore = new Firestore();
 
-async function createCustomer(ratecode, detail) {
+async function initDB(ratecode, detail) {
 
   const res = await firestore.collection('pricing').add({
       "rate code": ratecode,
