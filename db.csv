@@ -1,8 +1,0 @@
-﻿Rate Code,Customer,Region,Delivery Type,Fixed Delivery Deadline,Order window start,Order Cutoff,Days from Order to Delivery,Saturday Deliveries,Sunday Deliveries,Public Holiday Deliveries,Base Rate (ex GST),Incl KM,Incl Volume,Incl Kg,Additional KM Rate,Additional Volume Rate,Additional KG Rate,Pickup Deadline,Delivery Deadline Home,Delivery Deadline Business,Same Day Mins Pickup Deadline,Same Day Mins Delivery Deadline,Saturday Surcharge,Sunday Surcharge,PH Surcharge
-C1205-AU_SYD-SDS,C1205,AU_SYD,SDS,1,,11:00,0,Y,Y,Y,17.6,18,0.5,999,0.65,50,0,16:00,18:30,17:00,0,0,0,0,25%
-C1205-AU_SYD-ND5,C1205,AU_SYD,ND5,1,0:00,20:00,1,N,N,N,17.6,18,0.5,999,0.65,50,0,16:00,18:30,17:00,0,0,0,0,0
-C1205-AU_SYD-RTS,C1205,AU_SYD,RTS,1,0:00,20:00,3,N,N,N,17.6,18,0.5,999,0.65,50,0,16:00,18:30,17:00,0,0,0,0,0
-C1205-AU_SYD-RUS,C1205,AU_SYD,RUS,1,0:00,20:00,2,N,N,N,17.6,18,0.5,999,0.65,50,0,16:00,18:30,17:00,0,0,0,0,0
-C1000-AU_SYD-ND7,C1000,AU_SYD,ND7,1,0:00,20:00,1,Y,Y,Y,11.9,60,0.05,999,0.65,50,0,16:00,18:30,17:00,0,0,10%,20%,25%
-C1205-AU_SYD-VIP,C1205,AU_SYD,VIP,0,6:00,20:00,0,Y,Y,Y,34.95,5,0.2,999,0.8,75,0,16:00,18:30,17:00,60,120,20%,25%,50%
-C1205-AU_SYD-SD3,C1205,AU_SYD,SD3,0,9:00,14:00,0,Y,Y,Y,17.6,18,0.5,999,0.65,50,0,16:00,18:30,17:00,150,180,0%,0%,25%
