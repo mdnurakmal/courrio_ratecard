@@ -103,6 +103,7 @@ function calculateDistance(ori,des) {
                 }
             }
             console.log("Total distance = " + JSON.stringify(distances));
+            console.log("Total distance = " + distances["rows"][0]);
             console.log("Total distance = " + distances["rows"][0]["elements"][0]["text"]);
             return totalDistance;
         });
