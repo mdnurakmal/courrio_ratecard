@@ -61,7 +61,7 @@ const firestore = new Firestore();
 async function initDB( detail) {
 
   const res = await firestore.collection('pricing').add({
-    "detail": detail,
+    "detail": JSON.stringify(detail),
   });
 
 }
