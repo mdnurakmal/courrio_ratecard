@@ -151,11 +151,11 @@ router.post('/price', async (request, response) => {
                         var volumeCharge = request.body["volume"] > parseFloat(rateCard["Incl Volume"]) ? (request.body["volume"] - parseFloat(rateCard["Incl Volume"])) * parseFloat(rateCard["Additional Volume Rate"]) : 0;
                         var surcharge =  !deliveryDate.isoWeekday ? 0.25 : 0;
                         
-                        console.log("base" = basePrice);
-                        console.log("distanceCharge" = distanceCharge);
-                        console.log("weightCharge" = weightCharge);
-                        console.log("volumeCharge" = volumeCharge);
-                        console.log("surcharge" = surcharge);
+                        console.log("base " + basePrice);
+                        console.log("distanceCharge "+ distanceCharge);
+                        console.log("weightCharge " + weightCharge);
+                        console.log("volumeCharge " + volumeCharge);
+                        console.log("surcharge " + surcharge);
                         var calculatedPrice = (basePrice + distanceCharge + weightCharge + volumeCharge) * (1 + surcharge);
 
                         response.statusCode = 200;
