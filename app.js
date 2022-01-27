@@ -97,14 +97,14 @@ router.post('/price', async (request, response) => {
                     await calculateDistance(request.body["pickup_address"],request.body["delivery_address"])
                     .then(calculatedDis => {
                         var basePrice = 17.60;
-                        var distanceCharge = calculatedDis > parseFloat(rateCard["Incl KM"]) ? (calculatedDis % parseFloat(rateCard["Incl KM"])) * parseFloat(rateCard["Additional KM Rate"]) : 0;
+                        var distanceCharge = calculatedDis > parseFloat(rateCard["Incl KM"]) ? (calculatedDis - parseFloat(rateCard["Incl KM"])) * parseFloat(rateCard["Additional KM Rate"]) : 0;
                         var weightCharge;
                         var volumeCharge;
                         var surcharge;
     
                         console.log(calculatedDis);
                         console.log(parseFloat(rateCard["Incl KM"]));
-                        console.log(parseFloat(rateCard["Incl KM"]) + "distanceCharge is " + distanceCharge + " // " + (calculatedDis % parseFloat(rateCard["Incl KM"])));
+                        console.log(parseFloat(rateCard["Incl KM"]) + "distanceCharge is " + distanceCharge + " // " + (calculatedDis - parseFloat(rateCard["Incl KM"])));
                         response.statusCode = 200;
                         response.send(calculatedDis);
                     })
