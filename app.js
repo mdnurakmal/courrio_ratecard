@@ -129,9 +129,8 @@ router.post('/price', async (request, response) => {
 
             var orderDate = moment().tz("Australia/Sydney");
             var deliveryDate = computeDeliveryDate(rateCard["Delivery Type"],rateCard["Fixed Delivery Deadline"],rateCard["Order Cutoff"],rateCard["Delivery Deadline Home"],orderDate);
-            var deliveryDate1  = moment("29-01-2022 22:24", "DD-MM-YYYY hh:mm")
-            console.log(deliveryDate.toString());
-            console.log(deliveryDate1.toString());
+            //var deliveryDate1  = moment("29-01-2022 22:24", "DD-MM-YYYY hh:mm")
+ 
             // measure latency from the moment courrio receive api request until receive respond from tookan
             var startDate = moment();
 
@@ -150,8 +149,8 @@ router.post('/price', async (request, response) => {
                         var distanceCharge = calculatedDis > parseFloat(rateCard["Incl KM"]) ? (calculatedDis - parseFloat(rateCard["Incl KM"])) * parseFloat(rateCard["Additional KM Rate"]) : 0;
                         var weightCharge = request.body["weight"] > parseFloat(rateCard["Incl Kg"]) ? (request.body["weight"] - parseFloat(rateCard["Incl Kg"])) * parseFloat(rateCard["Additional KG Rate"]) : 0;
                         var volumeCharge = request.body["volume"] > parseFloat(rateCard["Incl Volume"]) ? (request.body["volume"] - parseFloat(rateCard["Incl Volume"])) * parseFloat(rateCard["Additional Volume Rate"]) : 0;
-                        var surcharge =  deliveryDate1.isoWeekday()== 6 || deliveryDate1.isoWeekday()== 7? 0.25 : 0;
-                        console.log("weekday " + deliveryDate1.isoWeekday());
+                        var surcharge =  deliveryDate.isoWeekday()== 6 || deliveryDate.isoWeekday()== 7? 0.25 : 0;
+                        console.log("weekday " + deliveryDate.isoWeekday());
                         console.log("base " + basePrice);
                         console.log("distanceCharge "+ distanceCharge);
                         console.log("weightCharge " + weightCharge);
@@ -160,7 +159,7 @@ router.post('/price', async (request, response) => {
                         var calculatedPrice = (basePrice + distanceCharge + weightCharge + volumeCharge) * (1 + surcharge);
 
                         response.statusCode = 200;
-                        response.send({"price":calculatedPrice.toFixed(2)});
+                        response.send({"price":calculatedPrice.toFixed(1)});
                     })
                     .catch(function(err) {
 
