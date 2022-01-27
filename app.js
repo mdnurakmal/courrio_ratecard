@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 const res = require("express/lib/response");
 const Promise = require('promise');
 const distance = require('google-distance-matrix');
+const momentHoliday = require('moment-holiday');
+
 distance.key(process.env.MAP_API_KEY);
 const app = express();
 const router = express.Router();
@@ -25,6 +27,49 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
+function computeDeliveryDate(rate,fixedDeadline,orderCutOff,deliveryDeadline,orderDate)
+{
+    // same day delivery and delivery dateline set to 1700
+    console.log(rate + " , " + fixedDeadline  + " , " + orderDate.format('MMMM Do YYYY, h:mm:ss a') + ", " +orderCutOff)
+    var deliveryDate;
+    var cutoff;
+    var timeSplit = orderCutOff.split(":")[0];
+
+    //check if order is before cutoff
+
+    if(rate == "SDS" && fixedDeadline == 1)
+    {
+        cutoff = moment().tz("Australia/Sydney").set({"hour": timeSplit[0], "minute": timeSplit[1],"second":0});
+        deliveryDate = moment().tz("Australia/Sydney").set({"hour": 17, "minute": 0,"second":0});
+    }
+    else if(rate == "VIP" && fixedDeadline == 0)
+    {
+
+        cutoff = moment().tz("Australia/Sydney").set({"hour": timeSplit[0], "minute": timeSplit[1],"second":0});
+        deliveryDate = moment().tz("Australia/Sydney").set({"hour": 17, "minute": 0,"second":0});
+    }
+    else if(rate == "ND5" && fixedDeadline == 1)
+    {
+
+        cutoff = moment().tz("Australia/Sydney").set({"hour": timeSplit[0], "minute": timeSplit[1],"second":0});
+        deliveryDate = moment().tz("Australia/Sydney").add(1,"days");
+        deliveryDate.set({"hour": 17, "minute": 0,"second":0});
+    }
+
+    var isBefore = moment(orderDate).isBefore(cutoff);
+
+    if(isBefore)
+    {
+        console.log("order is before cut off");
+        return deliveryDate;
+    }
+    else
+    {
+        throw "Order is after cut off time";
+    }
+
+    //return moment(orderDate, "YYYY-MM-DD").tz("Australia/Sydney").add(1,"days").format("YYYY-MM-DD HH:mm:ss");
+}
 
 // sum up distance between all destinations
 async function calculateDistance(ori,des) {
@@ -82,6 +127,10 @@ router.post('/price', async (request, response) => {
             var rateCode =request.body["rate_code"];
             var rateCard = await customer.getRateCard(rateCode);
 
+            var orderDate = moment().tz("Australia/Sydney");
+            var deliveryDate = computeDeliveryDate(rateCard["Delivery Type"],rateCard["Fixed Delivery Deadline"],rateCard["Order Cutoff"],rateCard["Delivery Deadline Home"],orderDate);
+           
+
             // measure latency from the moment courrio receive api request until receive respond from tookan
             var startDate = moment();
 
@@ -98,15 +147,19 @@ router.post('/price', async (request, response) => {
                     .then(calculatedDis => {
                         var basePrice = 17.60;
                         var distanceCharge = calculatedDis > parseFloat(rateCard["Incl KM"]) ? (calculatedDis - parseFloat(rateCard["Incl KM"])) * parseFloat(rateCard["Additional KM Rate"]) : 0;
-                        var weightCharge;
-                        var volumeCharge;
-                        var surcharge;
-    
-                        console.log(calculatedDis);
-                        console.log(parseFloat(rateCard["Incl KM"]));
-                        console.log(parseFloat(rateCard["Incl KM"]) + "distanceCharge is " + distanceCharge + " // " + (calculatedDis - parseFloat(rateCard["Incl KM"])));
+                        var weightCharge = request.body["weight"] > parseFloat(rateCard["Incl Kg"]) ? (request.body["weight"] - parseFloat(rateCard["Incl Kg"])) * parseFloat(rateCard["Additional KG Rate"]) : 0;
+                        var volumeCharge = request.body["volume"] > parseFloat(rateCard["Incl Volume"]) ? (request.body["volume"] - parseFloat(rateCard["Incl Volume"])) * parseFloat(rateCard["Additional Volume Rate"]) : 0;
+                        var surcharge =  !deliveryDate.isoWeekday ? 0.25 : 0;
+                        
+                        console.log("base" = basePrice);
+                        console.log("distanceCharge" = distanceCharge);
+                        console.log("weightCharge" = weightCharge);
+                        console.log("volumeCharge" = volumeCharge);
+                        console.log("surcharge" = surcharge);
+                        var calculatedPrice = (basePrice + distanceCharge + weightCharge + volumeCharge) * (1 + surcharge);
+
                         response.statusCode = 200;
-                        response.send(calculatedDis);
+                        response.send(calculatedPrice);
                     })
                     .catch(function(err) {
 
