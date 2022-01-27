@@ -94,6 +94,7 @@ router.post('/price', async (request, response) => {
                         var volumeCharge;
                         var surcharge;
     
+                        console.log(calculatedDis);
                         console.log(parseFloat(rateCard["Incl KM"]));
                         console.log(parseFloat(rateCard["Incl KM"]) + "distanceCharge is " + distanceCharge + " // " + (calculatedDis % parseFloat(rateCard["Incl KM"])));
                         response.statusCode = 200;
