@@ -32,7 +32,7 @@ async function calculateDistance(ori,des) {
     var totalDistance = 0;
     var origins = [ori];
     var destinations =[des];
-    distance.matrix(origins,destinations, await function(err, distances) {
+    await distance.matrix(origins,destinations, await function(err, distances) {
 
         if (err) {
             return console.log(err);
