@@ -1,6 +1,5 @@
 const https = require('https');
 var moment = require('moment-timezone');
-moment.weekdays(true);
 const http = require('http');
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -149,8 +148,8 @@ router.post('/price', async (request, response) => {
                         var distanceCharge = calculatedDis > parseFloat(rateCard["Incl KM"]) ? (calculatedDis - parseFloat(rateCard["Incl KM"])) * parseFloat(rateCard["Additional KM Rate"]) : 0;
                         var weightCharge = request.body["weight"] > parseFloat(rateCard["Incl Kg"]) ? (request.body["weight"] - parseFloat(rateCard["Incl Kg"])) * parseFloat(rateCard["Additional KG Rate"]) : 0;
                         var volumeCharge = request.body["volume"] > parseFloat(rateCard["Incl Volume"]) ? (request.body["volume"] - parseFloat(rateCard["Incl Volume"])) * parseFloat(rateCard["Additional Volume Rate"]) : 0;
-                        var surcharge =  deliveryDate.weekday == 6 || deliveryDate.weekday== 7? 0.25 : 0;
-                        console.log("weekday " + deliveryDate.weekday);
+                        var surcharge =  deliveryDate.day() == 6 || deliveryDate.day()== 7? 0.25 : 0;
+                        console.log("weekday " + deliveryDate.day());
                         console.log("base " + basePrice);
                         console.log("distanceCharge "+ distanceCharge);
                         console.log("weightCharge " + weightCharge);
