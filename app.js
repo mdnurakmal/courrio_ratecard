@@ -59,14 +59,8 @@ async function calculateDistance(ori,des) {
             totalDistance= distances.rows[0].elements[0].distance.text.split(" ")[0];
             console.log(totalDistance);
             return totalDistance;
-        })
-        .catch(function(err) {
-
-            console.log(err);
-            response.statusCode = 200;
-            response.send(err.toString());
-            return;
         });
+
 
     
 }
