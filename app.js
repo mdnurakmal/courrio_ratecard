@@ -27,12 +27,12 @@ app.use(bodyParser.json());
 
 
 // sum up distance between all destinations
-function calculateDistance(ori,des) {
+async function calculateDistance(ori,des) {
 
     var totalDistance = 0;
     var origins = [ori];
     var destinations =[des];
-        distance.matrix(origins,destinations, function(err, distances) {
+        await distance.matrix(origins,destinations, function(err, distances) {
 
             if (err) {
                 return console.log(err);
@@ -59,9 +59,15 @@ function calculateDistance(ori,des) {
             totalDistance= distances.rows[0].elements[0].distance.text.split(" ")[0];
             console.log(totalDistance);
             return totalDistance;
+        })
+        .catch(function(err) {
+
+            console.log(err);
+            response.statusCode = 200;
+            response.send(err.toString());
+            return;
         });
 
-        return totalDistance;
     
 }
 //courrio get order API
@@ -83,10 +89,10 @@ router.post('/price', async (request, response) => {
             {
              
                 await regions.lookupPostcode(postCode[1])
-                .then(res => {
+                .then(async res => {
                     console.log(res);
                     response.statusCode = 200;
-                    var distance = calculateDistance(request.body["pickup_address"],request.body["delivery_address"]);
+                    var distance = await calculateDistance(request.body["pickup_address"],request.body["delivery_address"]);
 
                     var basePrice = 17.60;
                     var distanceCharge = distance > parseFloat(rateCard["Incl KM"])? (distance % parseFloat(rateCard["Incl KM"])) * rateCard["Additional KM Rate"] : 0;
