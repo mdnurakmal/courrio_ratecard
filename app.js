@@ -1,5 +1,5 @@
 const https = require('https');
-const moment = require('moment');
+var moment = require('moment-timezone');
 const http = require('http');
 const express = require("express");
 const bodyParser = require("body-parser");
