@@ -6,8 +6,6 @@ const bodyParser = require("body-parser");
 const res = require("express/lib/response");
 const Promise = require('promise');
 const distance = require('google-distance-matrix');
-
-
 distance.key(process.env.MAP_API_KEY);
 const app = express();
 const router = express.Router();
@@ -160,7 +158,7 @@ router.post('/price', async (request, response) => {
                         var calculatedPrice = (basePrice + distanceCharge + weightCharge + volumeCharge) * (1 + surcharge);
 
                         response.statusCode = 200;
-                        response.send(calculatedPrice);
+                        response.send({"price":calculatedPrice});
                     })
                     .catch(function(err) {
 
