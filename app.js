@@ -25,53 +25,6 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-// Listen to notification sent fr
-
-// sort destination by distance closest to origin
-function sortDistance(origins, destinations) {
-    console.log(origins + destinations);
-    distance.matrix(origins, destinations, function(err, distances) {
-        var calculatedDistance = [];
-        if (err) {
-            return console.log(err);
-        }
-        if (!distances) {
-            return console.log('no distances');
-        }
-
-        if (distances.status == 'OK') {
-            for (var i = 0; i < origins.length; i++) {
-                calculatedDistance.push({
-                    "distance": 0,
-                    "address": origins[i]
-                });
-                for (var j = 0; j < destinations.length; j++) {
-                    var origin = distances.origin_addresses[i];
-                    var destination = distances.destination_addresses[j];
-
-                    if (distances.rows[0].elements[j].status == 'OK') {
-                        var distance = distances.rows[i].elements[j].distance.text;
-                        console.log('Distance from ' + origin + ' to ' + destination + ' is ' + distance);
-
-                        calculatedDistance.push({
-                            "distance": distance.split(" ")[0],
-                            "address": destinations[j]
-                        });
-                    } else {
-                        console.log(destination + ' is not reachable by land from ' + origin);
-                    }
-                }
-            }
-        }
-
-        calculatedDistance.sort(function(a, b) {
-            return a.distance - b.distance;
-        });
-
-        console.log(calculatedDistance)
-        return calculateDistance(calculatedDistance);
-    });
-}
 
 // sum up distance between all destinations
 function calculateDistance(ori,des) {
@@ -113,15 +66,18 @@ function calculateDistance(ori,des) {
 }
 //courrio get order API
 router.post('/price', async (request, response) => {
-    // var promise = customer.checkAPIKey(request.body["api_key"]);
+    var promise = customer.checkAPIKey(request.body["api_key"]);
 
-    // await Promise.all([promise])
-    //     .then(async results => {
+    await Promise.all([promise])
+        .then(async results => {
 
-    //         // measure latency from the moment courrio receive api request until receive respond from tookan
-    //         var startDate = moment();
+            var rateCode =request.body["rate_code"];
+            var rateCard = await customer.getRateCard(rateCode);
 
-    //         // fetch rate card from db
+            // measure latency from the moment courrio receive api request until receive respond from tookan
+            var startDate = moment();
+
+            // fetch rate card from db
             var postCode = request.body["pickup_address"].split("Australia ");
             if(postCode.length > 1)
             {
@@ -131,6 +87,13 @@ router.post('/price', async (request, response) => {
                     console.log(res);
                     response.statusCode = 200;
                     var distance = calculateDistance(request.body["pickup_address"],request.body["delivery_address"]);
+
+                    var basePrice = 17.60;
+                    var distanceCharge = distance > rateCard["Incl KM"]? (distance % parseFloat(rateCard["Incl KM"])) * rateCard["Additional KM Rate"] : 0;
+                    var weightCharge;
+                    var volumeCharge;
+                    var surcharge;
+                    console.log("distanceCharge is " + distanceCharge);
                     response.send(distance.toString());
                 })
                 .catch(function(err) {
@@ -153,14 +116,14 @@ router.post('/price', async (request, response) => {
             // console.log("Requesting for order: " + request.body["volume"]);
 
 
-    //     })
-    //     .catch(function(err) {
+        })
+        .catch(function(err) {
 
-    //         console.log(err);
-    //         response.statusCode = 200;
-    //         response.send(err.toString());
-    //         return;
-    //     });
+            console.log(err);
+            response.statusCode = 200;
+            response.send(err.toString());
+            return;
+        });
 });
 
 

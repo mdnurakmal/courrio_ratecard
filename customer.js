@@ -88,10 +88,20 @@ function checkAPIKey(key) {
   return promise;
 }
 
-
+async function getRateCard(ratecard) {
+  const customersRef = firestore.collection('pricing');
+  const snapshot = await customersRef.where('Rate Code', '==', ratecard.toString()).get();
+  if (snapshot.empty) {
+      console.log('No matching documents.');
+      return;
+  }
+  
+  return snapshot.docs[0].data();
+}
 
 module.exports = {
   createCustomer,
   getCustomer,
-  checkAPIKey
+  checkAPIKey,
+  getRateCard
 };
