@@ -89,7 +89,7 @@ router.post('/price', async (request, response) => {
                     var distance = calculateDistance(request.body["pickup_address"],request.body["delivery_address"]);
 
                     var basePrice = 17.60;
-                    var distanceCharge = distance > rateCard["Incl KM"]? (distance % parseFloat(rateCard["Incl KM"])) * rateCard["Additional KM Rate"] : 0;
+                    var distanceCharge = distance > parseFloat(rateCard["Incl KM"])? (distance % parseFloat(rateCard["Incl KM"])) * rateCard["Additional KM Rate"] : 0;
                     var weightCharge;
                     var volumeCharge;
                     var surcharge;
