@@ -128,9 +128,10 @@ router.post('/price', async (request, response) => {
             var rateCard = await customer.getRateCard(rateCode);
 
             var orderDate = moment().tz("Australia/Sydney");
-            //var deliveryDate = computeDeliveryDate(rateCard["Delivery Type"],rateCard["Fixed Delivery Deadline"],rateCard["Order Cutoff"],rateCard["Delivery Deadline Home"],orderDate);
-            var deliveryDate  = moment("29-01-2022", "DD-MM-YYYY")
-
+            var deliveryDate = computeDeliveryDate(rateCard["Delivery Type"],rateCard["Fixed Delivery Deadline"],rateCard["Order Cutoff"],rateCard["Delivery Deadline Home"],orderDate);
+            var deliveryDate1  = moment("29-01-2022", "DD-MM-YYYY")
+            console.log(deliveryDate.toString());
+            console.log(deliveryDate1.toString());
             // measure latency from the moment courrio receive api request until receive respond from tookan
             var startDate = moment();
 
