@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const res = require("express/lib/response");
 const Promise = require('promise');
 const distance = require('google-distance-matrix');
-const momentHoliday = require('moment-holiday');
+
 
 distance.key(process.env.MAP_API_KEY);
 const app = express();
