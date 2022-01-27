@@ -1,5 +1,6 @@
 const https = require('https');
 var moment = require('moment-timezone');
+const momentDefault = require('moment');
 const http = require('http');
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -128,7 +129,7 @@ router.post('/price', async (request, response) => {
 
             var orderDate = moment().tz("Australia/Sydney");
             //var deliveryDate = computeDeliveryDate(rateCard["Delivery Type"],rateCard["Fixed Delivery Deadline"],rateCard["Order Cutoff"],rateCard["Delivery Deadline Home"],orderDate);
-            var deliveryDate  = moment("29-01-2022 23:45", "DD-MM-YYYY HH:MM")
+            var deliveryDate  = momentDefault("29-01-2022 23:45", "DD-MM-YYYY HH:MM")
 
             // measure latency from the moment courrio receive api request until receive respond from tookan
             var startDate = moment();
