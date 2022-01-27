@@ -152,7 +152,7 @@ router.post('/price', async (request, response) => {
                         var surcharge =  deliveryDate.isoWeekday()== 6 || deliveryDate.isoWeekday()== 7? 0.25 : 0;
                         console.log(request.body["weight"] + " // " + parseFloat(rateCard["Incl Kg"]));
 
-                        console.log("weekday " + deliveryDate.isoWeekday());
+                        console.log("weekday " + deliveryDate.isoWeekday() + " / " + parseFloat(rateCard["Additional KG Rate"]));
                         console.log("base " + basePrice);
                         console.log("distanceCharge "+ distanceCharge);
                         console.log("weightCharge " + weightCharge);
