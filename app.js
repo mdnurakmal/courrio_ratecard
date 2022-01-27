@@ -93,7 +93,8 @@ router.post('/price', async (request, response) => {
                     var weightCharge;
                     var volumeCharge;
                     var surcharge;
-                    console.log("distanceCharge is " + distanceCharge);
+
+                    console.log(parseFloat(rateCard["Incl KM"]) + "distanceCharge is " + distanceCharge);
                     response.send(distance.toString());
                 })
                 .catch(function(err) {
