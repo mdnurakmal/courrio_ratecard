@@ -85,17 +85,28 @@ router.post('/price', async (request, response) => {
                 await regions.lookupPostcode(postCode[1])
                 .then(async res => {
                     console.log(res);
-                    response.statusCode = 200;
-                    var distance = await calculateDistance(request.body["pickup_address"],request.body["delivery_address"]);
 
-                    var basePrice = 17.60;
-                    var distanceCharge = distance > parseFloat(rateCard["Incl KM"])? (distance % parseFloat(rateCard["Incl KM"])) * rateCard["Additional KM Rate"] : 0;
-                    var weightCharge;
-                    var volumeCharge;
-                    var surcharge;
+                    var distance = await calculateDistance(request.body["pickup_address"],request.body["delivery_address"])
+                    .then(calculatedDis => {
+                        var basePrice = 17.60;
+                        var distanceCharge = distance > parseFloat(rateCard["Incl KM"])? (distance % parseFloat(rateCard["Incl KM"])) * rateCard["Additional KM Rate"] : 0;
+                        var weightCharge;
+                        var volumeCharge;
+                        var surcharge;
+    
+                        console.log(parseFloat(rateCard["Incl KM"]) + "distanceCharge is " + distanceCharge);
+                        response.statusCode = 200;
+                        response.send(distance.toString());
+                    })
+                    .catch(function(err) {
 
-                    console.log(parseFloat(rateCard["Incl KM"]) + "distanceCharge is " + distanceCharge);
-                    response.send(distance.toString());
+                        console.log(err);
+                        response.statusCode = 400;
+                        response.send(err);
+                        return;
+                    });
+
+                 
                 })
                 .catch(function(err) {
 
