@@ -64,7 +64,8 @@ function computeDeliveryDate(rate,fixedDeadline,orderCutOff,deliveryDeadline,ord
     }
     else
     {
-        return deliveryDate;
+        console.log(deliveryDate.add(1,"days").format("YYYY-MM-DD HH:mm:ss"));
+        return deliveryDate.add(1,"days");
         throw "Order is after cut off time";
     }
 
