@@ -39,24 +39,18 @@ function computeDeliveryDate(rate,fixedDeadline,orderCutOff,deliveryDeadline,ord
 
     //check if order is before cutoff
 
-    if(rate == "SDS" && fixedDeadline == 1)
-    {
-        cutoff = moment().tz("Australia/Sydney").set({"hour": timeSplit[0], "minute": timeSplit[1],"second":0});
-        deliveryDate = moment().tz("Australia/Sydney").set({"hour": 17, "minute": 0,"second":0});
-    }
-    else if(rate == "VIP" && fixedDeadline == 0)
-    {
-
-        cutoff = moment().tz("Australia/Sydney").set({"hour": timeSplit[0], "minute": timeSplit[1],"second":0});
-        deliveryDate = moment().tz("Australia/Sydney").set({"hour": 17, "minute": 0,"second":0});
-    }
-    else if(rate == "ND5" && fixedDeadline == 1)
-    {
-
-        cutoff = moment().tz("Australia/Sydney").set({"hour": timeSplit[0], "minute": timeSplit[1],"second":0});
-        deliveryDate = moment().tz("Australia/Sydney").add(1,"days");
-        deliveryDate.set({"hour": 17, "minute": 0,"second":0});
-    }
+    if (fixedDeadline == 1) {
+        cutoff = moment().tz("Australia/Sydney").set({
+            "hour": timeSplit[0],
+            "minute": timeSplit[1],
+            "second": 0
+        });
+        deliveryDate = moment().tz("Australia/Sydney").set({
+            "hour": 17,
+            "minute": 0,
+            "second": 0
+        });
+    } 
 
     var isBefore = moment(orderDate).isBefore(cutoff);
 
