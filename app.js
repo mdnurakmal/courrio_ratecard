@@ -31,8 +31,9 @@ function computeDeliveryDate(rate,fixedDeadline,orderCutOff,deliveryDeadline,ord
     // same day delivery and delivery dateline set to 1700
     console.log(rate + " , " + fixedDeadline  + " , " + orderDate.format('MMMM Do YYYY, h:mm:ss a') + ", " +orderCutOff)
     var temp = orderDate.set({"hour": 25, "minute": 0,"second":0})
-    console.log(temp + ">>");
+    console.log(temp.format('MMMM Do YYYY, h:mm:ss a') + ">>");
     var deliveryDate;
+
     var cutoff;
     var timeSplit = orderCutOff.split(":")[0];
 
@@ -66,7 +67,9 @@ function computeDeliveryDate(rate,fixedDeadline,orderCutOff,deliveryDeadline,ord
     }
     else
     {
-        console.log(deliveryDate.add(1,"days").format("YYYY-MM-DD HH:mm:ss"));
+        deliveryDate = deliveryDate.add(1,"days");
+        console.log(deliveryDate.format("YYYY-MM-DD HH:mm:ss"));
+        console.log("Order placed after cut off time : Order is placed as next day")
         return deliveryDate.add(1,"days");
         throw "Order is after cut off time";
     }
