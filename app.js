@@ -30,7 +30,7 @@ function computeDeliveryDate(rate,fixedDeadline,orderCutOff,deliveryDeadline,ord
 {
     // same day delivery and delivery dateline set to 1700
     console.log(rate + " , " + fixedDeadline  + " , " + orderDate.format('MMMM Do YYYY, h:mm:ss a') + ", " +orderCutOff)
-    var temp = orderDate.set({"hour": 25, "minute": 0,"second":0})
+    var temp = orderDate.set({"hour": 22, "minute": 0,"second":0})
     console.log(temp.format('MMMM Do YYYY, h:mm:ss a') + ">>");
     var deliveryDate;
 
