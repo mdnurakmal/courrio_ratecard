@@ -138,7 +138,7 @@ router.post('/price', async (request, response) => {
 
 						await calculateDistance(request.body["pickup_address"], request.body["delivery_address"])
 							.then(calculatedDis => {
-								var basePrice = rateCard["Base Rate (ex GST)"];
+								var basePrice = parseFloat(rateCard["Base Rate (ex GST)"]);
 								var distanceCharge = calculatedDis > parseFloat(rateCard["Incl KM"]) ? (calculatedDis - parseFloat(rateCard["Incl KM"])) * parseFloat(rateCard["Additional KM Rate"]) : 0;
 								var weightCharge = request.body["weight"] > parseFloat(rateCard["Incl Kg"]) ? (request.body["weight"] - parseFloat(rateCard["Incl Kg"])) * parseFloat(rateCard["Additional KG Rate"]) : 0;
 								var volumeCharge = request.body["volume"] > parseFloat(rateCard["Incl Volume"]) ? (request.body["volume"] - parseFloat(rateCard["Incl Volume"])) * parseFloat(rateCard["Additional Volume Rate"]) : 0;
