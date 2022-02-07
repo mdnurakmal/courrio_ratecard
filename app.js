@@ -22,185 +22,169 @@ const customer = require('./customer.js');
 //rate.importCsv();
 
 app.use(bodyParser.urlencoded({
-    extended: false
+	extended: false
 }));
 app.use(bodyParser.json());
 
-function computeDeliveryDate(rate,fixedDeadline,orderCutOff,deliveryDeadline,orderDate)
-{
-    // same day delivery and delivery dateline set to 1700
-    console.log(rate + " , " + fixedDeadline  + " , " + orderDate.format('MMMM Do YYYY, h:mm:ss a') + ", " +orderCutOff)
-    // var temp = orderDate.set({"day":31 , "hour": 22, "minute": 0,"second":0})
-    // console.log(temp.format('MMMM Do YYYY, h:mm:ss a') + ">>");
-    var deliveryDate;
+function computeDeliveryDate(rate, fixedDeadline, orderCutOff, deliveryDeadline, orderDate) {
+	// same day delivery and delivery dateline set to 1700
+	console.log(rate + " , " + fixedDeadline + " , " + orderDate.format('MMMM Do YYYY, h:mm:ss a') + ", " + orderCutOff)
+	// var temp = orderDate.set({"day":31 , "hour": 22, "minute": 0,"second":0})
+	// console.log(temp.format('MMMM Do YYYY, h:mm:ss a') + ">>");
+	var deliveryDate;
 
-    var cutoff;
-    var timeSplit = orderCutOff.split(":")[0];
+	var cutoff;
+	var timeSplit = orderCutOff.split(":")[0];
 
-    //check if order is before cutoff
+	//check if order is before cutoff
+
+	// ToDo: fixed delivery dateline , add to git modules
+	cutoff = moment().tz("Australia/Sydney").set({
+		"hour": timeSplit[0],
+		"minute": timeSplit[1],
+		"second": 0
+	});
+	deliveryDate = moment().tz("Australia/Sydney").set({
+		"hour": 17,
+		"minute": 0,
+		"second": 0
+	});
 
 
-    cutoff = moment().tz("Australia/Sydney").set({
-        "hour": timeSplit[0],
-        "minute": timeSplit[1],
-        "second": 0
-    });
-    deliveryDate = moment().tz("Australia/Sydney").set({
-        "hour": 17,
-        "minute": 0,
-        "second": 0
-    });
-    
+	var isBefore = moment(orderDate).isBefore(cutoff);
 
-    var isBefore = moment(orderDate).isBefore(cutoff);
+	if (isBefore) {
+		console.log("order is before cut off");
+		return deliveryDate;
+	} else {
+		deliveryDate = deliveryDate.add(1, "days");
+		console.log(deliveryDate.format("YYYY-MM-DD HH:mm:ss"));
+		console.log("Order placed after cut off time : Order is placed as next day")
+		return deliveryDate;
+		throw "Order is after cut off time";
+	}
 
-    if(isBefore)
-    {
-        console.log("order is before cut off");
-        return deliveryDate;
-    }
-    else
-    {
-        deliveryDate = deliveryDate.add(1,"days");
-        console.log(deliveryDate.format("YYYY-MM-DD HH:mm:ss"));
-        console.log("Order placed after cut off time : Order is placed as next day")
-        return deliveryDate;
-        throw "Order is after cut off time";
-    }
-
-    //return moment(orderDate, "YYYY-MM-DD").tz("Australia/Sydney").add(1,"days").format("YYYY-MM-DD HH:mm:ss");
+	//return moment(orderDate, "YYYY-MM-DD").tz("Australia/Sydney").add(1,"days").format("YYYY-MM-DD HH:mm:ss");
 }
 
 // sum up distance between all destinations
-async function calculateDistance(ori,des) {
+async function calculateDistance(ori, des) {
 
-    var totalDistance = 0;
-    var origins = [ori];
-    var destinations =[des];
-    return new Promise((resolve, reject) => {
-        distance.matrix(origins,destinations,  function(err, distances) {
+	var totalDistance = 0;
+	var origins = [ori];
+	var destinations = [des];
+	return new Promise((resolve, reject) => {
+			distance.matrix(origins, destinations, function(err, distances) {
 
-            if (err) {
+				if (err) {
 
-                reject(err);
-            }
-            if (!distances) {
-                reject('no distances');
-            }
-    
-            if (distances.status == 'OK') {
-                for (var i=0; i < origins.length; i++) {
-                    for (var j = 0; j < destinations.length; j++) {
-                        var origin = distances.origin_addresses[i];
-                        var destination = distances.destination_addresses[j];
-                        if (distances.rows[0].elements[j].status == 'OK') {
-                            var distance = distances.rows[i].elements[j].distance.text;
-                            console.log('Distance from ' + origin + ' to ' + destination + ' is ' + distance);
-                        } else {
-                            console.log(destination + ' is not reachable by land from ' + origin);
-                        }
-                    }
-                }
-            }
-    
-            totalDistance= distances.rows[0].elements[0].distance.text.split(" ")[0];
-            console.log(totalDistance);
-            resolve(totalDistance);
-        });
-    })
-    .catch(function(err) {
-        console.log(err);
-        return;
-    });
-       
+					reject(err);
+				}
+				if (!distances) {
+					reject('no distances');
+				}
 
+				if (distances.status == 'OK') {
+					for (var i = 0; i < origins.length; i++) {
+						for (var j = 0; j < destinations.length; j++) {
+							var origin = distances.origin_addresses[i];
+							var destination = distances.destination_addresses[j];
+							if (distances.rows[0].elements[j].status == 'OK') {
+								var distance = distances.rows[i].elements[j].distance.text;
+								console.log('Distance from ' + origin + ' to ' + destination + ' is ' + distance);
+							} else {
+								console.log(destination + ' is not reachable by land from ' + origin);
+							}
+						}
+					}
+				}
 
-    
+				totalDistance = distances.rows[0].elements[0].distance.text.split(" ")[0];
+				console.log(totalDistance);
+				resolve(totalDistance);
+			});
+		})
+		.catch(function(err) {
+			console.log(err);
+			return;
+		});
+
 }
+
 //courrio get order API
 router.post('/price', async (request, response) => {
-    var promise = customer.checkAPIKey(request.body["api_key"]);
+	var promise = customer.checkAPIKey(request.body["api_key"]);
 
-    await Promise.all([promise])
-        .then(async results => {
+	await Promise.all([promise])
+		.then(async results => {
 
-            var rateCode =request.body["rate_code"];
-            var rateCard = await customer.getRateCard(rateCode);
+			var rateCode = request.body["rate_code"];
+			var rateCard = await customer.getRateCard(rateCode);
 
-            var orderDate = moment().tz("Australia/Sydney");
-            var deliveryDate = computeDeliveryDate(rateCard["Delivery Type"],rateCard["Fixed Delivery Deadline"],rateCard["Order Cutoff"],rateCard["Delivery Deadline Home"],orderDate);
-            //var deliveryDate1  = moment("29-01-2022 22:24", "DD-MM-YYYY hh:mm")
- 
-            // measure latency from the moment courrio receive api request until receive respond from tookan
-            var startDate = moment();
+			var orderDate = moment().tz("Australia/Sydney");
+			var deliveryDate = computeDeliveryDate(rateCard["Delivery Type"], rateCard["Fixed Delivery Deadline"], rateCard["Order Cutoff"], rateCard["Delivery Deadline Home"], orderDate);
+			//var deliveryDate1  = moment("29-01-2022 22:24", "DD-MM-YYYY hh:mm")
 
-            // fetch rate card from db
-            var postCode = request.body["pickup_address"].split("Australia ");
-            if(postCode.length > 1)
-            {
-             
-                await regions.lookupPostcode(postCode[1])
-                .then(async res => {
-                    console.log(res);
+			// measure latency from the moment courrio receive api request until receive respond from tookan
+			var startDate = moment();
 
-                    await calculateDistance(request.body["pickup_address"],request.body["delivery_address"])
-                    .then(calculatedDis => {
-                        var basePrice = 17.60;
-                        var distanceCharge = calculatedDis > parseFloat(rateCard["Incl KM"]) ? (calculatedDis - parseFloat(rateCard["Incl KM"])) * parseFloat(rateCard["Additional KM Rate"]) : 0;
-                        var weightCharge = request.body["weight"] > parseFloat(rateCard["Incl Kg"]) ? (request.body["weight"] - parseFloat(rateCard["Incl Kg"])) * parseFloat(rateCard["Additional KG Rate"]) : 0;
-                        var volumeCharge = request.body["volume"] > parseFloat(rateCard["Incl Volume"]) ? (request.body["volume"] - parseFloat(rateCard["Incl Volume"])) * parseFloat(rateCard["Additional Volume Rate"]) : 0;
-                        var surcharge =  deliveryDate.isoWeekday()== 6 || deliveryDate.isoWeekday()== 7? 0.25 : 0;
-                        console.log(request.body["weight"] + " // " + parseFloat(rateCard["Incl Kg"]));
+			// fetch rate card from db
+			var postCode = request.body["pickup_address"].split("Australia ");
+			if (postCode.length > 1) {
 
-                        console.log("weekday " + deliveryDate.isoWeekday() + " / " + parseFloat(rateCard["Additional KG Rate"]));
-                        console.log("base " + basePrice);
-                        console.log("distanceCharge "+ distanceCharge);
-                        console.log("weightCharge " + weightCharge);
-                        console.log("volumeCharge " + volumeCharge);
-                        console.log("surcharge " + surcharge);
-                        var calculatedPrice = (basePrice + distanceCharge + weightCharge + volumeCharge) * (1 + surcharge);
+				await regions.lookupPostcode(postCode[1])
+					.then(async res => {
+						console.log(res);
 
-                        response.statusCode = 200;
-                        response.send({"price":calculatedPrice.toFixed(1)});
-                    })
-                    .catch(function(err) {
+						await calculateDistance(request.body["pickup_address"], request.body["delivery_address"])
+							.then(calculatedDis => {
+								var basePrice = rateCard["Base Rate (ex GST)"];
+								var distanceCharge = calculatedDis > parseFloat(rateCard["Incl KM"]) ? (calculatedDis - parseFloat(rateCard["Incl KM"])) * parseFloat(rateCard["Additional KM Rate"]) : 0;
+								var weightCharge = request.body["weight"] > parseFloat(rateCard["Incl Kg"]) ? (request.body["weight"] - parseFloat(rateCard["Incl Kg"])) * parseFloat(rateCard["Additional KG Rate"]) : 0;
+								var volumeCharge = request.body["volume"] > parseFloat(rateCard["Incl Volume"]) ? (request.body["volume"] - parseFloat(rateCard["Incl Volume"])) * parseFloat(rateCard["Additional Volume Rate"]) : 0;
+								var surcharge = deliveryDate.isoWeekday() == 6 || deliveryDate.isoWeekday() == 7 ? 0.25 : 0;
+								console.log(request.body["weight"] + " // " + parseFloat(rateCard["Incl Kg"]));
 
-                        console.log(err);
-                        response.statusCode = 400;
-                        response.send(err);
-                        return;
-                    });
+								console.log("weekday " + deliveryDate.isoWeekday() + " / " + parseFloat(rateCard["Additional KG Rate"]));
+								console.log("base " + basePrice);
+								console.log("distanceCharge " + distanceCharge);
+								console.log("weightCharge " + weightCharge);
+								console.log("volumeCharge " + volumeCharge);
+								console.log("surcharge " + surcharge);
+								var calculatedPrice = (basePrice + distanceCharge + weightCharge + volumeCharge) * (1 + surcharge);
 
-                 
-                })
-                .catch(function(err) {
+								response.statusCode = 200;
+								response.send({
+									"price": calculatedPrice.toFixed(1)
+								});
+							})
+							.catch(function(err) {
 
-                    console.log(err);
-                    response.statusCode = 400;
-                    response.send(err);
-                    return;
-                });
-               
-            }
-
-     
-        
-            // console.log("Requesting for order: " + request.body["customer_number"]);
-            // console.log("Requesting for order: " + request.body["delivery_code"]);
-            // console.log("Requesting for order: " + request.body["pickup_address"]);
-            // console.log("Requesting for order: " + request.body["delivery_address"]);
-            // console.log("Requesting for order: " + request.body["weight"]);
-            // console.log("Requesting for order: " + request.body["volume"]);
+								console.log(err);
+								response.statusCode = 400;
+								response.send(err);
+								return;
+							});
 
 
-        })
-        .catch(function(err) {
+					})
+					.catch(function(err) {
 
-            console.log(err);
-            response.statusCode = 200;
-            response.send(err.toString());
-            return;
-        });
+						console.log(err);
+						response.statusCode = 400;
+						response.send(err);
+						return;
+					});
+
+			}
+		})
+		.catch(function(err) {
+
+			console.log(err);
+			response.statusCode = 200;
+			response.send(err.toString());
+			return;
+		});
 });
 
 
