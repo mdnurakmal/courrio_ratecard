@@ -23,6 +23,10 @@ const customer = require('./customer.js');
 // initialize rate card from csv
 //rate.importCsv();
 
+//logging
+const apiMetrics = require('prometheus-api-metrics');
+app.use(apiMetrics())
+
 app.use(bodyParser.urlencoded({
 	extended: false
 }));
