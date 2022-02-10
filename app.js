@@ -26,24 +26,22 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-function computeDeliveryDate(rate, fixedDeadline, orderCutOff, deliveryDeadline, orderDate) {
+function computeDeliveryDate(rate, fixedDeadline, orderCutOff, deliveryDeadline,daysToDelivery, orderDate) {
 	// same day delivery and delivery dateline set to 1700
 	console.log(rate + " , " + fixedDeadline + " , " + orderDate.format('MMMM Do YYYY, h:mm:ss a') + ", " + orderCutOff)
-	// var temp = orderDate.set({"day":31 , "hour": 22, "minute": 0,"second":0})
-	// console.log(temp.format('MMMM Do YYYY, h:mm:ss a') + ">>");
-	var deliveryDate;
 
+	var deliveryDate;
 	var cutoff;
 	var timeSplit = orderCutOff.split(":")[0];
 
 	//check if order is before cutoff
 
-	// ToDo: fixed delivery dateline , add to git modules
 	cutoff = moment().tz("Australia/Sydney").set({
 		"hour": timeSplit[0],
 		"minute": timeSplit[1],
 		"second": 0
 	});
+	
 	deliveryDate = moment().tz("Australia/Sydney").set({
 		"hour": 17,
 		"minute": 0,
@@ -55,17 +53,22 @@ function computeDeliveryDate(rate, fixedDeadline, orderCutOff, deliveryDeadline,
 
 	if (isBefore) {
 		console.log("order is before cut off");
+		console.log("days to delivery: " + daysToDelivery);
+		deliveryDate = deliveryDate.add(daysToDelivery, "days");
 		return deliveryDate;
 	} else {
-		deliveryDate = deliveryDate.add(1, "days");
+		daysToDelivery+=1;
+		console.log("days to delivery: " + daysToDelivery);
+		deliveryDate = deliveryDate.add(daysToDelivery, "days");
 		console.log(deliveryDate.format("YYYY-MM-DD HH:mm:ss"));
 		console.log("Order placed after cut off time : Order is placed as next day")
 		return deliveryDate;
-		throw "Order is after cut off time";
+		//throw "Order is after cut off time";
 	}
 
 	//return moment(orderDate, "YYYY-MM-DD").tz("Australia/Sydney").add(1,"days").format("YYYY-MM-DD HH:mm:ss");
 }
+
 
 // sum up distance between all destinations
 async function calculateDistance(ori, des) {
@@ -122,7 +125,7 @@ router.post('/price', async (request, response) => {
 			var rateCard = await customer.getRateCard(rateCode);
 
 			var orderDate = moment().tz("Australia/Sydney");
-			var deliveryDate = computeDeliveryDate(rateCard["Delivery Type"], rateCard["Fixed Delivery Deadline"], rateCard["Order Cutoff"], rateCard["Delivery Deadline Home"], orderDate);
+			var deliveryDate = computeDeliveryDate(rateCard["Delivery Type"], rateCard["Fixed Delivery Deadline"], rateCard["Order Cutoff"], rateCard["Delivery Deadline Home"],parseInt(rateCard["Days from Order to Delivery"]), orderDate);
 			//var deliveryDate1  = moment("29-01-2022 22:24", "DD-MM-YYYY hh:mm")
 
 			// measure latency from the moment courrio receive api request until receive respond from tookan
