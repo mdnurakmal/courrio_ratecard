@@ -23,11 +23,6 @@ const customer = require('./customer.js');
 // initialize rate card from csv
 //rate.importCsv();
 
-//logging
-const swStats = require('swagger-stats');
-const apiSpec = require('swagger.json');
-app.use(swStats.getMiddleware({swaggerSpec:apiSpec}));
-
 app.use(bodyParser.urlencoded({
 	extended: false
 }));
