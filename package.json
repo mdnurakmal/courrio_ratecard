@@ -15,7 +15,9 @@
     "moment": "^2.29.1",
     "moment-holiday": "^1.5.1",
     "moment-timezone": "^0.5.34",
+    "prom-client": "^12.0.0",
     "promise": "^8.1.0",
+    "swagger-stats": "^0.99.2",
     "util": "^0.12.4"
   },
   "devDependencies": {},
