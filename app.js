@@ -155,7 +155,8 @@ router.post('/price', async (request, response) => {
 
 								response.statusCode = 200;
 								response.send({
-									"price": calculatedPrice.toFixed(1)
+									"price": calculatedPrice.toFixed(1),
+									"total_dist": calculatedDis
 								});
 							})
 							.catch(function(err) {
