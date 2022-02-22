@@ -36,23 +36,27 @@ function computeDeliveryDate(rate, fixedDeadline, orderCutOff, deliveryDeadline,
 	// same day delivery and delivery dateline set to 1700
 	console.log(rate + " , " + fixedDeadline + " , " + orderDate.format('MMMM Do YYYY, h:mm:ss a') + ", " + orderCutOff)
 
-	var deliveryDate;
 	var cutoff;
-	var timeSplit = orderCutOff.split(":")[0];
+	var timeSplit = orderCutOff.split(":")
 
 	//check if order is before cutoff
-
-	cutoff = moment().tz("Australia/Sydney").set({
-		"hour": timeSplit[0],
-		"minute": timeSplit[1],
-		"second": 0
-	});
 	
-	deliveryDate = moment().tz("Australia/Sydney").set({
-		"hour": 17,
-		"minute": 0,
-		"second": 0
-	});
+	var cutoff = moment();
+	cutoff.set('year', orderDate.format('YYYY'));
+	cutoff.set('month', parseInt(orderDate.format('MM'))-1);  // April
+	cutoff.set('date', orderDate.format('DD'));
+	cutoff.set('hour', timeSplit[0]);
+	cutoff.set('minute', timeSplit[1]);
+
+	console.log("orderDate time"+ orderDate.format("YYYY-MM-DD HH:mm:ss"));
+	console.log("cutoff time"+ cutoff.format("YYYY-MM-DD HH:mm:ss"));
+
+	var deliveryDate = moment();
+	deliveryDate.set('year', orderDate.format('YYYY'));
+	deliveryDate.set('month',  parseInt(orderDate.format('MM'))-1);  // April
+	deliveryDate.set('date', orderDate.format('DD'));
+	deliveryDate.set('hour', 17);
+	deliveryDate.set('minute', 0);
 
 
 	var isBefore = moment(orderDate).isBefore(cutoff);
@@ -61,6 +65,7 @@ function computeDeliveryDate(rate, fixedDeadline, orderCutOff, deliveryDeadline,
 		console.log("order is before cut off");
 		console.log("days to delivery: " + daysToDelivery);
 		deliveryDate = deliveryDate.add(daysToDelivery, "days");
+		console.log(deliveryDate.format("YYYY-MM-DD HH:mm:ss"));
 		return deliveryDate;
 	} else {
 		daysToDelivery+=1;
