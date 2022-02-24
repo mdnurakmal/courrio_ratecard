@@ -32,6 +32,29 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
+function checkIfNextDayIsWeekend(deliveryDate,deliveryDays)
+{
+	var daysToAdd=0;
+	var tempDate = deliveryDate.clone();
+	for (let i = 0; i < deliveryDays; i++) 
+	{
+		var dayOfWeekBeforeDeliveryDays = tempDate.format('dddd');
+		console.log(dayOfWeekBeforeDeliveryDays);
+		if(dayOfWeekBeforeDeliveryDays === 'Saturday' || dayOfWeekBeforeDeliveryDays === 'Sunday')
+		{
+			daysToAdd+=1;
+			deliveryDays+=1;
+		}
+
+		tempDate = tempDate.add(1, "days");
+	}
+	
+	console.log("Additional days for weekend " + daysToAdd);
+	return daysToAdd;
+
+}
+
+
 function computeDeliveryDate(rate, fixedDeadline, orderCutOff, deliveryDeadline,daysToDelivery, orderDate) {
 	// same day delivery and delivery dateline set to 1700
 	console.log(rate + " , " + fixedDeadline + " , " + orderDate.format('MMMM Do YYYY, h:mm:ss a') + ", " + orderCutOff)
@@ -41,7 +64,7 @@ function computeDeliveryDate(rate, fixedDeadline, orderCutOff, deliveryDeadline,
 	var timeSplit = orderCutOff.split(":")
 
 	//check if order is before cutoff
-	
+	console.log("Original days to delivery " + daysToDelivery);
 	var cutoff = moment();
 	cutoff.set('year', orderDate.format('YYYY'));
 	cutoff.set('month', parseInt(orderDate.format('MM'))-1);  // April
@@ -59,43 +82,25 @@ function computeDeliveryDate(rate, fixedDeadline, orderCutOff, deliveryDeadline,
 	deliveryDate.set('hour', 17);
 	deliveryDate.set('minute', 0);
 
-
+	console.log("Original deliveryDate " + deliveryDate.format("YYYY-MM-DD HH:mm:ss"))
 	var isBefore = moment(orderDate.format("YYYY-MM-DD HH:mm:ss")).isBefore(cutoff);
 
 	if (isBefore) {
-		console.log("order is before cut off");
-		console.log("days to delivery: " + daysToDelivery);
+		deliveryDate = deliveryDate.add(1, "days");
+		daysToDelivery+= checkIfNextDayIsWeekend(deliveryDate,daysToDelivery)-1;
 		deliveryDate = deliveryDate.add(daysToDelivery, "days");
-
-		var dayOfWeek = deliveryDate.format('dddd');
-		console.log(dayOfWeek);
-		var isWeekend = (dayOfWeek === 'Sunday') || (dayOfWeek  === 'Saturday'); // 6 = Saturday, 0 = Sunday
-
-		if(isWeekend)
-		{
-			console.log("ori delivery date is weekend adding 2 days")
-			deliveryDate = deliveryDate.add(2, "days");
-		}
-
 		console.log(deliveryDate.format("YYYY-MM-DD HH:mm:ss"));
+		console.log("Order placed before cut off time : Order is placed as next day")
 		return deliveryDate;
 	} else {
-		daysToDelivery+=1;
-		console.log("days to delivery: " + daysToDelivery);
+
+		// add 1 day because its next day
+		deliveryDate = deliveryDate.add(2, "days");
+		daysToDelivery+= checkIfNextDayIsWeekend(deliveryDate,daysToDelivery)-1;
 		deliveryDate = deliveryDate.add(daysToDelivery, "days");
-
-		var dayOfWeek = deliveryDate.format('dddd');
-		console.log(dayOfWeek + "// ");
-		var isWeekend = (dayOfWeek === 'Sunday') || (dayOfWeek  === 'Saturday'); // 6 = Saturday, 0 = Sunday
-
-		if(isWeekend)
-		{
-			console.log("ori delivery date is weekend adding 2 days")
-			deliveryDate = deliveryDate.add(2, "days");
-		}
-
 		console.log(deliveryDate.format("YYYY-MM-DD HH:mm:ss"));
 		console.log("Order placed after cut off time : Order is placed as next day")
+
 		return deliveryDate;
 		//throw "Order is after cut off time";
 	}
