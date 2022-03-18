@@ -203,8 +203,8 @@ router.post('/price', async (request, response) => {
 			.then(async res => {
                // console.error(res.data)
                console.error("OK")
-				response.status(res.status);
-				response.send(res.body["delivery_date"]);
+				//response.status(res.status);
+				//response.send(res.body["delivery_date"]);
 
 			
 			var deliveryDate = moment(res.body["delivery_date"],"YYYY-MM-DD HH:mm:ss");
