@@ -196,7 +196,7 @@ router.post('/price', async (request, response) => {
 			var orderDate = moment().tz("Australia/Sydney");
 
 			await axios
-			.post("https://api.courrio.com/computeDeliveryDate",{
+			.post("http://api.courrio.com/computeDeliveryDate",{
                 "order_date":orderDate.format("YYYY-MM-DD HH:mm:ss"),
                 "rate_code":rateCode
             })
