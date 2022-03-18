@@ -198,7 +198,7 @@ router.post('/price', async (request, response) => {
 			await axios
 			.post("http://api.courrio.com/computeDeliveryDate",{
                 "order_date":orderDate.format("YYYY-MM-DD HH:mm:ss"),
-                "rate_code":rate_code
+                "rate_code":rateCode
             })
 			.then(async res => {
                // console.error(res.data)
