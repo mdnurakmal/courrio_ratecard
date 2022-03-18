@@ -194,7 +194,20 @@ router.post('/price', async (request, response) => {
 			var rateCard = await customer.getRateCard(rateCode);
 
 			var orderDate = moment().tz("Australia/Sydney");
-			var deliveryDate = computeDeliveryDate(rateCard["Delivery Type"], rateCard["Fixed Delivery Deadline"], rateCard["Order Cutoff"], rateCard["Delivery Deadline Home"],parseInt(rateCard["Days from Order to Delivery"]), orderDate,rateCard["Saturday Deliveries"],rateCard["Sunday Deliveries"]);
+
+			await axios
+			.post("http://api.courrio.com/computeDeliveryDate",{
+                "order_date":orderDate.format("YYYY-MM-DD HH:mm:ss"),
+                "rate_code":rate_code
+            })
+			.then(res => {
+               // console.error(res.data)
+               console.error("OK")
+				response.status(res.status);
+				response.send(res.body["delivery_date"]);
+
+			
+			var deliveryDate = moment(res.body["delivery_date"],"YYYY-MM-DD HH:mm:ss");
 			//var deliveryDate1  = moment("29-01-2022 22:24", "DD-MM-YYYY hh:mm")
 
 			// measure latency from the moment courrio receive api request until receive respond from tookan
@@ -250,6 +263,16 @@ router.post('/price', async (request, response) => {
 					});
 
 			}
+			})
+			.catch(error => {
+
+				// if error , webhook url is invalid , no server is listening on it
+				console.error("ERROR")
+				response.statusCode = 401;
+				response.send(error);
+			});
+
+
 		})
 		.catch(function(err) {
 
