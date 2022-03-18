@@ -32,7 +32,31 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-function checkIfNextDayIsWeekend(deliveryDate,deliveryDays)
+function checkIfAfterCutOffIsWeekend(deliveryDate,satDel,sunDel)
+{
+	var tempDate = deliveryDate.clone();
+
+	var dayOfWeekBeforeDeliveryDays = tempDate.format('dddd');
+	console.log("order date: " + dayOfWeekBeforeDeliveryDays + " , " + satDel + ' , ' + sunDel);
+	if((dayOfWeekBeforeDeliveryDays === 'Saturday' && satDel=="Y" )|| (dayOfWeekBeforeDeliveryDays === 'Sunday' && sunDel=="Y"))
+	{
+		console.log("a. added additional days for after hours");
+		return true;
+	}
+	else if((dayOfWeekBeforeDeliveryDays === 'Saturday' && satDel=="N" )|| (dayOfWeekBeforeDeliveryDays === 'Sunday' && sunDel=="N"))
+	{
+		console.log("b. added additional days for after hours");
+		return false;
+	}
+	else
+	{
+		console.log("no additional days for after hours");
+		return true;
+	}
+	
+}
+
+function checkIfNextDayIsWeekend(deliveryDate,deliveryDays,satDel,sunDel)
 {
 	var daysToAdd=0;
 	var tempDate = deliveryDate.clone();
@@ -40,7 +64,7 @@ function checkIfNextDayIsWeekend(deliveryDate,deliveryDays)
 	{
 		var dayOfWeekBeforeDeliveryDays = tempDate.format('dddd');
 		console.log(dayOfWeekBeforeDeliveryDays);
-		if(dayOfWeekBeforeDeliveryDays === 'Saturday' || dayOfWeekBeforeDeliveryDays === 'Sunday')
+		if((dayOfWeekBeforeDeliveryDays === 'Saturday' && satDel=="N" )|| (dayOfWeekBeforeDeliveryDays === 'Sunday' && sunDel=="N"))
 		{
 			daysToAdd+=1;
 			deliveryDays+=1;
@@ -55,9 +79,9 @@ function checkIfNextDayIsWeekend(deliveryDate,deliveryDays)
 }
 
 
-function computeDeliveryDate(rate, fixedDeadline, orderCutOff, deliveryDeadline,daysToDelivery, orderDate) {
+function computeDeliveryDate(rate, fixedDeadline, orderCutOff, deliveryDeadline,daysToDelivery, orderDate,satDel,sunDel) {
 	// same day delivery and delivery dateline set to 1700
-	console.log(rate + " , " + fixedDeadline + " , " + orderDate.format('MMMM Do YYYY, h:mm:ss a') + ", " + orderCutOff)
+	console.log(rate + " , " + fixedDeadline + " , " + orderDate.format('MMMM DD YYYY, h:mm:ss a') + ", " + orderCutOff)
 
 
 	var cutoff;
@@ -82,23 +106,29 @@ function computeDeliveryDate(rate, fixedDeadline, orderCutOff, deliveryDeadline,
 	deliveryDate.set('hour', 17);
 	deliveryDate.set('minute', 0);
 	deliveryDate.set('second', 0);
-	
+
 	console.log("Original deliveryDate " + deliveryDate.format("YYYY-MM-DD HH:mm:ss"))
 	var isBefore = moment(orderDate.format("YYYY-MM-DD HH:mm:ss")).isBefore(cutoff);
 
+	if(daysToDelivery>=0)
+		daysToDelivery++;
+
 	if (isBefore) {
-		deliveryDate = deliveryDate.add(1, "days");
-		daysToDelivery+= checkIfNextDayIsWeekend(deliveryDate,daysToDelivery)-1;
-		deliveryDate = deliveryDate.add(daysToDelivery, "days");
+
+		daysToDelivery+= checkIfNextDayIsWeekend(deliveryDate,daysToDelivery,satDel,sunDel);
+		deliveryDate = deliveryDate.add(daysToDelivery-1, "days");
 		console.log(deliveryDate.format("YYYY-MM-DD HH:mm:ss"));
-		console.log("Order placed before cut off time : Order is placed as next day")
+		console.log("Order placed before cut off time : Order is placed as same day")
 		return deliveryDate;
 	} else {
 
 		// add 1 day because its next day
-		deliveryDate = deliveryDate.add(2, "days");
-		daysToDelivery+= checkIfNextDayIsWeekend(deliveryDate,daysToDelivery)-1;
-		deliveryDate = deliveryDate.add(daysToDelivery, "days");
+		if(checkIfAfterCutOffIsWeekend(deliveryDate,satDel,sunDel))
+			deliveryDate = deliveryDate.add(1, "days");
+
+
+		daysToDelivery+= checkIfNextDayIsWeekend(deliveryDate,daysToDelivery,satDel,sunDel);
+		deliveryDate = deliveryDate.add(daysToDelivery-1, "days");
 		console.log(deliveryDate.format("YYYY-MM-DD HH:mm:ss"));
 		console.log("Order placed after cut off time : Order is placed as next day")
 
@@ -108,7 +138,6 @@ function computeDeliveryDate(rate, fixedDeadline, orderCutOff, deliveryDeadline,
 
 	//return moment(orderDate, "YYYY-MM-DD").tz("Australia/Sydney").add(1,"days").format("YYYY-MM-DD HH:mm:ss");
 }
-
 
 // sum up distance between all destinations
 async function calculateDistance(ori, des) {
@@ -165,7 +194,7 @@ router.post('/price', async (request, response) => {
 			var rateCard = await customer.getRateCard(rateCode);
 
 			var orderDate = moment().tz("Australia/Sydney");
-			var deliveryDate = computeDeliveryDate(rateCard["Delivery Type"], rateCard["Fixed Delivery Deadline"], rateCard["Order Cutoff"], rateCard["Delivery Deadline Home"],parseInt(rateCard["Days from Order to Delivery"]), orderDate);
+			var deliveryDate = computeDeliveryDate(rateCard["Delivery Type"], rateCard["Fixed Delivery Deadline"], rateCard["Order Cutoff"], rateCard["Delivery Deadline Home"],parseInt(rateCard["Days from Order to Delivery"]), orderDate,rateCard["Saturday Deliveries"],rateCard["Sunday Deliveries"]);
 			//var deliveryDate1  = moment("29-01-2022 22:24", "DD-MM-YYYY hh:mm")
 
 			// measure latency from the moment courrio receive api request until receive respond from tookan
