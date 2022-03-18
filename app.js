@@ -81,7 +81,8 @@ function computeDeliveryDate(rate, fixedDeadline, orderCutOff, deliveryDeadline,
 	deliveryDate.set('date', orderDate.format('DD'));
 	deliveryDate.set('hour', 17);
 	deliveryDate.set('minute', 0);
-
+	deliveryDate.set('second', 0);
+	
 	console.log("Original deliveryDate " + deliveryDate.format("YYYY-MM-DD HH:mm:ss"))
 	var isBefore = moment(orderDate.format("YYYY-MM-DD HH:mm:ss")).isBefore(cutoff);
 
