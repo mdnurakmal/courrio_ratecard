@@ -1,6 +1,5 @@
 const https = require('https');
 var moment = require('moment-timezone');
-const momentDefault = require('moment');
 const http = require('http');
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -86,17 +85,14 @@ router.post('/price', async (request, response) => {
 
 			var orderDate = moment().tz("Australia/Sydney");
 
+			//get delivery date from main service
 			await axios
 				.post("http://api.courrio.com/computeDeliveryDate", {
 					"order_date": orderDate.format("YYYY-MM-DD HH:mm:ss"),
 					"rate_code": rateCode
 				})
 				.then(async resA => {
-					// console.error(res.data)
 					console.error("OK")
-					//response.status(res.status);
-					//response.send(res.body["delivery_date"]);
-
 
 					var deliveryDate = moment(resA.data["delivery_date"], "YYYY-MM-DD HH:mm:ss");
 					console.log(resA.data["delivery_date"])
