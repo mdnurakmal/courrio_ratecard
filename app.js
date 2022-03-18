@@ -200,15 +200,15 @@ router.post('/price', async (request, response) => {
                 "order_date":orderDate.format("YYYY-MM-DD HH:mm:ss"),
                 "rate_code":rateCode
             })
-			.then(async res => {
+			.then(async resA => {
                // console.error(res.data)
                console.error("OK")
 				//response.status(res.status);
 				//response.send(res.body["delivery_date"]);
 
 			
-			var deliveryDate = moment(res.body["delivery_date"],"YYYY-MM-DD HH:mm:ss");
-			console.log(res.body["delivery_date"])
+			var deliveryDate = moment(resA.data["delivery_date"],"YYYY-MM-DD HH:mm:ss");
+			console.log(resA.data["delivery_date"])
 
 			//var deliveryDate1  = moment("29-01-2022 22:24", "DD-MM-YYYY hh:mm")
 
