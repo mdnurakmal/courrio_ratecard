@@ -208,6 +208,8 @@ router.post('/price', async (request, response) => {
 
 			
 			var deliveryDate = moment(res.body["delivery_date"],"YYYY-MM-DD HH:mm:ss");
+			console.log(res.body["delivery_date"])
+			
 			//var deliveryDate1  = moment("29-01-2022 22:24", "DD-MM-YYYY hh:mm")
 
 			// measure latency from the moment courrio receive api request until receive respond from tookan
