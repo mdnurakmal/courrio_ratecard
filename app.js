@@ -1,5 +1,3 @@
-
-
 const https = require('https');
 var moment = require('moment-timezone');
 const momentDefault = require('moment');
@@ -89,55 +87,65 @@ router.post('/price', async (request, response) => {
 			var orderDate = moment().tz("Australia/Sydney");
 
 			await axios
-			.post("http://api.courrio.com/computeDeliveryDate",{
-                "order_date":orderDate.format("YYYY-MM-DD HH:mm:ss"),
-                "rate_code":rateCode
-            })
-			.then(async resA => {
-               // console.error(res.data)
-               console.error("OK")
-				//response.status(res.status);
-				//response.send(res.body["delivery_date"]);
+				.post("http://api.courrio.com/computeDeliveryDate", {
+					"order_date": orderDate.format("YYYY-MM-DD HH:mm:ss"),
+					"rate_code": rateCode
+				})
+				.then(async resA => {
+					// console.error(res.data)
+					console.error("OK")
+					//response.status(res.status);
+					//response.send(res.body["delivery_date"]);
 
-			
-			var deliveryDate = moment(resA.data["delivery_date"],"YYYY-MM-DD HH:mm:ss");
-			console.log(resA.data["delivery_date"])
 
-			//var deliveryDate1  = moment("29-01-2022 22:24", "DD-MM-YYYY hh:mm")
+					var deliveryDate = moment(resA.data["delivery_date"], "YYYY-MM-DD HH:mm:ss");
+					console.log(resA.data["delivery_date"])
 
-			// measure latency from the moment courrio receive api request until receive respond from tookan
-			var startDate = moment();
+					//var deliveryDate1  = moment("29-01-2022 22:24", "DD-MM-YYYY hh:mm")
 
-			// fetch rate card from db
-			var postCode = request.body["pickup_address"].split("Australia ");
-			if (postCode.length > 1) {
+					// measure latency from the moment courrio receive api request until receive respond from tookan
+					var startDate = moment();
 
-				await regions.lookupPostcode(postCode[1])
-					.then(async res => {
-						console.log(res);
+					// fetch rate card from db
+					var postCode = request.body["pickup_address"].split("Australia ");
+					if (postCode.length > 1) {
 
-						await calculateDistance(request.body["pickup_address"], request.body["delivery_address"])
-							.then(calculatedDis => {
-								var basePrice = parseFloat(rateCard["Base Rate (ex GST)"]);
-								var distanceCharge = calculatedDis > parseFloat(rateCard["Incl KM"]) ? (calculatedDis - parseFloat(rateCard["Incl KM"])) * parseFloat(rateCard["Additional KM Rate"]) : 0;
-								var weightCharge = request.body["weight"] > parseFloat(rateCard["Incl Kg"]) ? (request.body["weight"] - parseFloat(rateCard["Incl Kg"])) * parseFloat(rateCard["Additional KG Rate"]) : 0;
-								var volumeCharge = request.body["volume"] > parseFloat(rateCard["Incl Volume"]) ? (request.body["volume"] - parseFloat(rateCard["Incl Volume"])) * parseFloat(rateCard["Additional Volume Rate"]) : 0;
-								var surcharge = deliveryDate.isoWeekday() == 6 || deliveryDate.isoWeekday() == 7 ? 0.25 : 0;
-								console.log(request.body["weight"] + " // " + parseFloat(rateCard["Incl Kg"]));
+						await regions.lookupPostcode(postCode[1])
+							.then(async res => {
+								console.log(res);
 
-								console.log("weekday " + deliveryDate.isoWeekday() + " / " + parseFloat(rateCard["Additional KG Rate"]));
-								console.log("base " + basePrice);
-								console.log("distanceCharge " + distanceCharge);
-								console.log("weightCharge " + weightCharge);
-								console.log("volumeCharge " + volumeCharge);
-								console.log("surcharge " + surcharge);
-								var calculatedPrice = (basePrice + distanceCharge + weightCharge + volumeCharge) * (1 + surcharge);
+								await calculateDistance(request.body["pickup_address"], request.body["delivery_address"])
+									.then(calculatedDis => {
+										var basePrice = parseFloat(rateCard["Base Rate (ex GST)"]);
+										var distanceCharge = calculatedDis > parseFloat(rateCard["Incl KM"]) ? (calculatedDis - parseFloat(rateCard["Incl KM"])) * parseFloat(rateCard["Additional KM Rate"]) : 0;
+										var weightCharge = request.body["weight"] > parseFloat(rateCard["Incl Kg"]) ? (request.body["weight"] - parseFloat(rateCard["Incl Kg"])) * parseFloat(rateCard["Additional KG Rate"]) : 0;
+										var volumeCharge = request.body["volume"] > parseFloat(rateCard["Incl Volume"]) ? (request.body["volume"] - parseFloat(rateCard["Incl Volume"])) * parseFloat(rateCard["Additional Volume Rate"]) : 0;
+										var surcharge = deliveryDate.isoWeekday() == 6 || deliveryDate.isoWeekday() == 7 ? 0.25 : 0;
+										console.log(request.body["weight"] + " // " + parseFloat(rateCard["Incl Kg"]));
 
-								response.statusCode = 200;
-								response.send({
-									"price": calculatedPrice.toFixed(1),
-									"total_dist": calculatedDis
-								});
+										console.log("weekday " + deliveryDate.isoWeekday() + " / " + parseFloat(rateCard["Additional KG Rate"]));
+										console.log("base " + basePrice);
+										console.log("distanceCharge " + distanceCharge);
+										console.log("weightCharge " + weightCharge);
+										console.log("volumeCharge " + volumeCharge);
+										console.log("surcharge " + surcharge);
+										var calculatedPrice = (basePrice + distanceCharge + weightCharge + volumeCharge) * (1 + surcharge);
+
+										response.statusCode = 200;
+										response.send({
+											"price": calculatedPrice.toFixed(1),
+											"total_dist": calculatedDis
+										});
+									})
+									.catch(function(err) {
+
+										console.log(err);
+										response.statusCode = 400;
+										response.send(err);
+										return;
+									});
+
+
 							})
 							.catch(function(err) {
 
@@ -147,25 +155,15 @@ router.post('/price', async (request, response) => {
 								return;
 							});
 
+					}
+				})
+				.catch(error => {
 
-					})
-					.catch(function(err) {
-
-						console.log(err);
-						response.statusCode = 400;
-						response.send(err);
-						return;
-					});
-
-			}
-			})
-			.catch(error => {
-
-				// if error , webhook url is invalid , no server is listening on it
-				console.error(error)
-				response.statusCode = 401;
-				response.send(error);
-			});
+					// if error , webhook url is invalid , no server is listening on it
+					console.error(error)
+					response.statusCode = 401;
+					response.send(error);
+				});
 
 
 		})
