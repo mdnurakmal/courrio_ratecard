@@ -200,7 +200,7 @@ router.post('/price', async (request, response) => {
                 "order_date":orderDate.format("YYYY-MM-DD HH:mm:ss"),
                 "rate_code":rate_code
             })
-			.then(res => {
+			.then(async res => {
                // console.error(res.data)
                console.error("OK")
 				response.status(res.status);
